@@ -1,56 +1,64 @@
-var x = document.getElementById("form_sample");
-var createform = document.createElement('form');
-createform.setAttribute("action", ""); 
-createform.setAttribute("method", "post");
-x.appendChild(createform);
+<script>
+$(function()
+{
+    function after_form_submitted(data)
+    {
+        if(data.result == 'success')
+        {
+            $('form#reused_form').hide();
+            $('#success_message').show();
+            $('#error_message').hide();
+        }
+        else
+        {
+            $('#error_message').append('<ul></ul>');
 
-var heading = document.createElement('h2'); 
-heading.innerHTML = "Contact Form ";
-createform.appendChild(heading);
+            jQuery.each(data.errors,function(key,val)
+            {
+                $('#error_message ul').append('<li>'+key+':'+val+'</li>');
+            });
+            $('#success_message').hide();
+            $('#error_message').show();
 
-var line = document.createElement('hr'); 
-createform.appendChild(line);
+            //reverse the response on the button
+            $('button[type="button"]', $form).each(function()
+            {
+                $btn = $(this);
+                label = $btn.prop('orig_label');
+                if(label)
+                {
+                    $btn.prop('type','submit' );
+                    $btn.text(label);
+                    $btn.prop('orig_label','');
+                }
+            });
 
-var linebreak = document.createElement('br');
-createform.appendChild(linebreak);
+        }//else
+    }
 
-var namelabel = document.createElement('label'); 
-namelabel.innerHTML = "Your Name : ";
-createform.appendChild(namelabel);
+	$('#reused_form').submit(function(e)
+      {
+        e.preventDefault();
 
-var inputelement = document.createElement('input'); 
-inputelement.setAttribute("type", "text");
-inputelement.setAttribute("name", "dname");
-createform.appendChild(inputelement);
+        $form = $(this);
+        //show some response on the button
+        $('button[type="submit"]', $form).each(function()
+        {
+            $btn = $(this);
+            $btn.prop('type','button' );
+            $btn.prop('orig_label',$btn.text());
+            $btn.text('Sending ...');
+        });
 
-var linebreak = document.createElement('br');
-createform.appendChild(linebreak);
 
-var emaillabel = document.createElement('label');
-emaillabel.innerHTML = "Your Email : ";
-createform.appendChild(emaillabel);
+                    $.ajax({
+                type: "POST",
+                url: 'handler.php',
+                data: $form.serialize(),
+                success: after_form_submitted,
+                dataType: 'json'
+            });
 
-var emailelement = document.createElement('input'); 
-emailelement.setAttribute("type", "text");
-emailelement.setAttribute("name", "demail");
-createform.appendChild(emailelement);
-
-var emailbreak = document.createElement('br');
-createform.appendChild(emailbreak);
-
-var messagelabel = document.createElement('label'); 
-messagelabel.innerHTML = "Your Message : ";
-createform.appendChild(messagelabel);
-
-var texareaelement = document.createElement('textarea');
-texareaelement.setAttribute("name", "dmessage");
-createform.appendChild(texareaelement);
-
-var messagebreak = document.createElement('br');
-createform.appendChild(messagebreak);
-
-var submitelement = document.createElement('input'); 
-submitelement.setAttribute("type", "submit");
-submitelement.setAttribute("name", "dsubmit");
-submitelement.setAttribute("value", "Submit");
-createform.appendChild(submitelement);
+      });
+});
+</script>
