@@ -21,7 +21,7 @@ $(function()
             $('#error_message').show();
 
             //reverse the response on the button
-            $('button[type="button"]', $form).each(function()
+            $('button[type="submit"]', $form).each(function()
             {
                 $btn = $(this);
                 label = $btn.prop('orig_label');
